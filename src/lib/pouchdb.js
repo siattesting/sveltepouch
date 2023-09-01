@@ -30,10 +30,10 @@ export async function readPost(id) {
 }
 
 /**
- * @param {PouchDB.Core.RemoveDocument} post
+ * @param {PouchDB.Core.RemoveDocument} doc
  */
-export async function deletePost(post) {
-	const result = await db.remove(post);
+export async function deleteDoc(doc) {
+	const result = await db.remove(doc);
 	return result;
 }
 
@@ -41,4 +41,34 @@ export async function listPosts() {
 	const result = await db.allDocs({ include_docs: true });
 	const posts = result.rows.map((row) => row.doc);
 	return posts;
+}
+
+export async function getPosts() {
+	const { rows } = await db.allDocs({ include_docs: true });
+	const results = rows.filter((row) => row.doc.type === 'posts' || row.doc.type === 'post');
+	return results.map(({ doc }) => doc);
+}
+
+export async function getTodos() {
+	const { rows } = await db.allDocs({ include_docs: true });
+	const results = rows.filter((row) => row.doc.type === 'todos' || row.doc.type === 'todo');
+	return results.map(({ doc }) => doc);
+}
+/**
+ * @param {any} todo
+ */
+export async function createTodo(todo) {
+	if (todo.title === '') {
+		throw new Error('You must provide a title');
+	}
+	if (todo.content === '') {
+		throw new Error('You must provide a content');
+	}
+	todo.created_at = new Date().toISOString();
+	todo.updated_at = new Date().toISOString();
+	todo.type = 'todos';
+	todo._id = 'todos:' + new Date().toISOString();
+
+	const result = await db.post(todo);
+	return result;
 }

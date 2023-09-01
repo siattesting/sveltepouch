@@ -24,7 +24,8 @@ class Post {
 
 	async getAllPosts() {
 		const { rows } = await db.allDocs({ include_docs: true });
-		return rows.map(({ doc }) => doc);
+		const results = rows.filter((row) => row.doc.type === 'posts' || row.doc.type === 'post');
+		return results.map(({ doc }) => doc);
 	}
 }
 

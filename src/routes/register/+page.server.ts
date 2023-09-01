@@ -9,8 +9,9 @@ export const actions: Actions = {
 		};
 
 		try {
+			//create the user in
 			await locals.pb.collection('users').create(data);
-			//lof the user in
+			//log the user in
 			await locals.pb.collection('users').authWithPassword(data.email, data.password);
 		} catch (e) {
 			console.error(e);
